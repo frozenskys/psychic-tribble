@@ -1,7 +1,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Tools and Addins
 ///////////////////////////////////////////////////////////////////////////////
-#tool "GitVersion.CommandLine"
+#tool nuget:?package=GitVersion.CommandLine
+#tool nuget:?package=NUnit.ConsoleRunner
+#tool nuget:?package=NUnit.Extension.NUnitV2ResultWriter
 #addin nuget:?package=Cake.Git
 #addin nuget:?package=Cake.Figlet
 
@@ -13,8 +15,10 @@ var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 var versionType = Argument("VersionType", "patch");
 var artifacts = MakeAbsolute(Directory(Argument("artifactPath", "./artifacts")));
-
+var buildFolder = MakeAbsolute(Directory(Argument("buildFolder", "./build"))).ToString();
 GitVersion versionInfo = null;
+var testResultsFilePath = artifacts + "/TestResult.xml";
+var testOutputFile = File(testResultsFilePath);
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -84,22 +88,25 @@ Task("Default")
 Task("Build")
 	.Does(() =>
 	{
-		NuGetRestore("./src/Legacy/Legacy.sln");
-		var settings = new MSBuildSettings { Configuration = configuration, Verbosity = Verbosity.Minimal };
-
-		if(IsRunningOnWindows())
-		{
-		MSBuild("./src/Psychic-Tribble/Psychic-Tribble.sln", settings);
-		}
+		NuGetRestore("./src/Psychic-Tribble/Psychic-Tribble.sln");
+		MSBuild("./src/Psychic-Tribble/Psychic-Tribble.sln", settings => settings
+				.WithProperty("TreatWarningsAsErrors","true")
+				.WithProperty("UseSharedCompilation", "false")
+				.WithProperty("AutoParameterizationWebConfigConnectionStrings", "false")
+				.WithProperty("OutDir", buildFolder)
+				.SetVerbosity(Verbosity.Minimal)
+				.SetConfiguration(configuration)
+				.WithTarget("Rebuild"));
 	});
 
 Task("Test")
 	.IsDependentOn("Build")
 	.Does(() =>
 	{ 
-		NUnit3(buildFolder + "/**/*.Tests.dll", 
+		EnsureDirectoryExists(artifacts);
+		NUnit3(buildFolder + "/**/*Tests.dll", 
             new NUnit3Settings {
-                Results = TestOuput, 
+                Results = testOutputFile, 
                 ResultFormat = "nunit2"
             });
 	});
