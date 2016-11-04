@@ -10,6 +10,7 @@ namespace TribbleClient
     {
         static void Main(string[] args)
         {
+
         }
     }
 }
