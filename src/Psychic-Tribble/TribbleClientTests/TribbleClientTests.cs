@@ -18,7 +18,7 @@
         public void SetFixture()
         {
             var path = TestContext.CurrentContext.TestDirectory;
-            _data = new TribblePact(new PactConfig { LogDir = path, PactDir = Path.Combine(path, @"../../../pacts") });
+            _data = new TribblePact(new PactConfig { LogDir = path, PactDir = Path.Combine(path, @"./pacts") });
             _mockProviderService = _data.MockProviderService;
             _mockProviderServiceBaseUri = _data.MockProviderServiceBaseUri;
             _data.MockProviderService.ClearInteractions();

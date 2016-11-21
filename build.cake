@@ -105,7 +105,12 @@ Task("Test")
 	.Does(() =>
 	{ 
 		EnsureDirectoryExists(artifacts);
-		NUnit3(buildFolder + "/**/*Tests.dll", 
+		NUnit3(buildFolder + "/**/*ClientTests.dll", 
+            new NUnit3Settings {
+                Results = testOutputFile, 
+                ResultFormat = "nunit2"
+            });
+		NUnit3(buildFolder + "/**/*ServerTests.dll", 
             new NUnit3Settings {
                 Results = testOutputFile, 
                 ResultFormat = "nunit2"
