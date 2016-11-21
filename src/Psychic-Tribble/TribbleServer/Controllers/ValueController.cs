@@ -5,7 +5,7 @@
     using TribbleServer.Models;
 
 
-    public class TribbleController : ApiController
+    public class TribblesController : ApiController
     {
         public Tribble Get(int id)
         {
@@ -17,6 +17,18 @@
                 tribble = db.Tribbles.FirstOrDefault(s => s.Id == id);
             }
             return tribble;
+        }
+
+        public Tribble[] Get()
+        {
+            Tribble[] tribbles;
+
+            using (var db = new TribbleContext())
+            {
+                DbInitializer.Initialize(db);
+                tribbles = db.Tribbles.ToArray();
+            }
+            return tribbles;
         }
     }
 }
