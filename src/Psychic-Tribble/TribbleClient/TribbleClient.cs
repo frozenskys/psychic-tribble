@@ -25,7 +25,7 @@ namespace TribbleClient
 
             using (var client = new HttpClient { BaseAddress = new Uri(BaseUri) })
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, "/tribbles/" + id);
+                var request = new HttpRequestMessage(HttpMethod.Get, "/tribble/" + id);
                 request.Headers.Add("Accept", "application/json");
                 var response = client.SendAsync(request);
                 var content = response.Result.Content.ReadAsStringAsync().Result;

@@ -11,7 +11,7 @@
       "provider_state": "There is a tribble with id '1'",
       "request": {
         "method": "get",
-        "path": "/tribbles/1",
+        "path": "/tribble/1",
         "headers": {
           "Accept": "application/json"
         }
@@ -22,10 +22,10 @@
           "Content-Type": "application/json; charset=utf-8"
         },
         "body": {
-          "Id": "1",
+          "Id": 1,
           "Colour": "blue",
           "Furryness": "High",
-          "Hungry": "False"
+          "Hungry": true
         }
       }
     }

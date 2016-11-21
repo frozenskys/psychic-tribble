@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using Owin;
     using System.Web.Http;
+    using TribbleServer.Models;
 
     public class Startup
     {
@@ -18,7 +19,7 @@
             HttpConfiguration config = new HttpConfiguration();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
+                routeTemplate: "{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
 

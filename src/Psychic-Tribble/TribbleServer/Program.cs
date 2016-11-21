@@ -19,7 +19,7 @@ namespace TribbleServer
             using (WebApp.Start<Startup>(url: baseAddress))
             { 
                 HttpClient client = new HttpClient();
-                var response = client.GetAsync(baseAddress + "api/values").Result;
+                var response = client.GetAsync(baseAddress + "tribble/1").Result;
                 Console.WriteLine(response);
                 Console.WriteLine(response.Content.ReadAsStringAsync().Result);
             }

@@ -39,7 +39,7 @@
             .With(new ProviderServiceRequest
             {
                 Method = HttpVerb.Get,
-                Path = "/tribbles/1",
+                Path = "/tribble/1",
                 Headers = new Dictionary<string, string>
                 {
                     { "Accept", "application/json" }
@@ -54,10 +54,10 @@
                 },
                 Body = new 
                 {
-                    Id = "1",
+                    Id = 1,
                     Colour = "blue",
                     Furryness = "High",
-                    Hungry = "False"
+                    Hungry = true
                 }
             }); 
             var consumer = new TribbleClient.Client(_mockProviderServiceBaseUri);
