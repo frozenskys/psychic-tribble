@@ -19,7 +19,7 @@ namespace TribbleClient
             BaseUri = baseUri ?? "http://my-api";
         }
 
-        public Tribble GetTribbles(string id)
+        public Tribble GetTribbles(int id)
         {
             string reasonPhrase;
 

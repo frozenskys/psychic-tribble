@@ -77,6 +77,7 @@ Task("Clean")
     .Does(() =>
 	{
 		CleanDirectory(artifacts);
+		CleanDirectory(buildFolder);
 	});
 
 Task("Default")
