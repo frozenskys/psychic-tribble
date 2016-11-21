@@ -1,23 +1,33 @@
 ﻿namespace TribbleClientTests
 {
     using NUnit.Framework;
+    using PactNet;
     using PactNet.Mocks.MockHttpService;
     using PactNet.Mocks.MockHttpService.Models;
     using System.Collections.Generic;
+    using System.IO;
 
     [TestFixture]
     public class TribbleClientTests
     {
         private IMockProviderService _mockProviderService;
         private string _mockProviderServiceBaseUri;
+        private TribblePact _data;
 
         [OneTimeSetUp]
         public void SetFixture()
         {
-            var data = new TribblePact();
-            _mockProviderService = data.MockProviderService;
-            _mockProviderServiceBaseUri = data.MockProviderServiceBaseUri;
-            data.MockProviderService.ClearInteractions(); 
+            var path = TestContext.CurrentContext.TestDirectory; ;
+            _data = new TribblePact(new PactConfig { LogDir = path, PactDir = Path.Combine(path, @"../../../pacts") });
+            _mockProviderService = _data.MockProviderService;
+            _mockProviderServiceBaseUri = _data.MockProviderServiceBaseUri;
+            _data.MockProviderService.ClearInteractions();
+        }
+
+        [OneTimeTearDown]
+        public void TearDown()
+        {
+            _data.Dispose();
         }
 
         [Test]

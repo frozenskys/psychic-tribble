@@ -16,9 +16,9 @@ namespace TribbleClientTests
         public int MockServerPort => 1234;
         public string MockProviderServiceBaseUri => $"http://localhost:{MockServerPort}";
 
-        public TribblePact()
+        public TribblePact(PactConfig config)
         {
-            PactBuilder = new PactBuilder(new PactConfig { LogDir=@"C:\temp\" }); 
+            PactBuilder = new PactBuilder(config); 
             PactBuilder.ServiceConsumer("Consumer").HasPactWith("Tribble API");
             MockProviderService = PactBuilder.MockService(MockServerPort); 
         }

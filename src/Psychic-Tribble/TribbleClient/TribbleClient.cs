@@ -27,23 +27,18 @@ namespace TribbleClient
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, "/tribbles/" + id);
                 request.Headers.Add("Accept", "application/json");
-
                 var response = client.SendAsync(request);
-
                 var content = response.Result.Content.ReadAsStringAsync().Result;
                 var status = response.Result.StatusCode;
 
                 reasonPhrase = response.Result.ReasonPhrase; 
-
                 request.Dispose();
                 response.Dispose();
-
                 if (status == HttpStatusCode.OK)
                 {
                     return !string.IsNullOrEmpty(content) ? JsonConvert.DeserializeObject<Tribble>(content) : null;
                 }
             }
-
             throw new Exception(reasonPhrase); 
         }
     }
