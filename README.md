@@ -1,6 +1,6 @@
 # psychic-tribble
 
-A PactNet example
+A PactNet example [![Build status](https://ci.appveyor.com/api/projects/status/0v8x7cci3bq4dwxj/branch/master?svg=true)](https://ci.appveyor.com/project/frozenskys/psychic-tribble/branch/master)
 
 ## What is PactNet
 
