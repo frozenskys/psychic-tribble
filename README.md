@@ -4,8 +4,8 @@ A PactNet example [![Build status](https://ci.appveyor.com/api/projects/status/0
 
 ## What is PactNet
 
-PactNet primarily provides a fluent .NET DSL for describing HTTP requests that will be made to a service provider and the HTTP responses the consumer expects back to function correctly.  
-In documenting the consumer interactions, we can replay them on the provider and ensure the provider responds as expected. This basically gives us complete test symmetry and removes the basic need for integrated tests.  
+PactNet primarily provides a fluent .NET DSL for describing HTTP requests that will be made to a service provider and the HTTP responses the consumer expects back to function correctly.
+In documenting the consumer interactions, we can replay them on the provider and ensure the provider responds as expected. This basically gives us complete test symmetry and removes the basic need for integrated tests.
 PactNet also has the ability to support other mock providers should we see fit.
 
 PactNet is aiming to be Pact Specification Version 1.1 compliant (Version 2 is a WIP).
@@ -19,4 +19,3 @@ Read more about Pact and the problems it solves at <https://github.com/realestat
 PactNet is available from <https://github.com/SEEK-Jobs/pact-net>
 
 ## The Example Code
-
