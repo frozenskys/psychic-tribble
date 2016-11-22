@@ -27,7 +27,7 @@ var testOutputFile = File(testResultsFilePath);
 Setup(ctx =>
 {
 	// Executed BEFORE the first task.
-	Information(Figlet("Tribble Cake"));
+	Information(Figlet("Psychic-Tribble"));
 });
 
 Teardown(ctx =>

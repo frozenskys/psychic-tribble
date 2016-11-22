@@ -1,6 +1,8 @@
 # psychic-tribble
 
-A PactNet example [![Build status](https://ci.appveyor.com/api/projects/status/0v8x7cci3bq4dwxj/branch/master?svg=true)](https://ci.appveyor.com/project/frozenskys/psychic-tribble/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/0v8x7cci3bq4dwxj/branch/master?svg=true)](https://ci.appveyor.com/project/frozenskys/psychic-tribble/branch/master)
+
+A PactNet example
 
 ## What is PactNet
 
@@ -19,3 +21,153 @@ Read more about Pact and the problems it solves at <https://github.com/realestat
 PactNet is available from <https://github.com/SEEK-Jobs/pact-net>
 
 ## The Example Code
+
+The exmple code in this Repo consists of a Client\Server application that both support two methods
+
+1. Get all tribbles
+1. Get a tribble with a particular id
+
+And the following tests
+
+1. client tests that generate a Pact file and confirm that the client calls the interactions
+1. Server tests that use the generated Pact file to validate that the service honours the pact
+
+All the projects target the .NET Framework 4.5.2 with the data access being done using EF Core 1.1.0 and Sqlite
+
+To get running type the following at the command line:
+
+```bash
+mkdir psychic-tribble && cd psychic-tribble
+git clone https://github.com/frozenskys/psychic-tribble .
+cake
+```
+
+### The Client
+
+An example method on the client would look something like this.
+
+```csharp
+    public Tribble GetTribble(int id)
+    {
+        using (var client = new HttpClient { BaseAddress = new Uri(BaseUri) })
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/tribbles/" + id);
+            request.Headers.Add("Accept", "application/json");
+            var response = client.SendAsync(request);
+            var content = response.Result.Content.ReadAsStringAsync().Result;
+            var status = response.Result.StatusCode;
+            request.Dispose();
+            response.Dispose();
+            if (status == HttpStatusCode.OK)
+            {
+                return !string.IsNullOrEmpty(content) ? JsonConvert.DeserializeObject<Tribble>(content) : null;
+            }
+        }
+        throw new Exception();
+    }
+```
+
+The pact tests for this method look like this:
+
+```csharp
+    public void TestGetTribbleReturnsATribble ()
+    {
+        _mockProviderService
+        .Given("There is a tribble with id '1'")
+        .UponReceiving("A GET request to retrieve the tribble")
+        .With(new ProviderServiceRequest
+        {
+            Method = HttpVerb.Get,
+            Path = "/tribbles/1",
+            Headers = new Dictionary<string, string>
+            {
+                { "Accept", "application/json" }
+            }
+        })
+        .WillRespondWith(new ProviderServiceResponse
+        {
+            Status = 200,
+            Headers = new Dictionary<string, string>
+            {
+                { "Content-Type", "application/json; charset=utf-8" }
+            },
+            Body = new
+            {
+                Id = 1,
+                Colour = "blue",
+                Furryness = "High",
+                Hungry = true
+            }
+        });
+        var consumer = new TribbleClient.Client(_mockProviderServiceBaseUri);
+        var result = consumer.GetTribble(1);
+        Assert.AreEqual("blue", result.Colour);
+        _mockProviderService.VerifyInteractions();
+    }
+```
+
+This will generate a pact file with the following interaction:
+
+```json
+"interactions": [
+    {
+      "description": "A GET request to retrieve the tribble",
+      "provider_state": "There is a tribble with id '1'",
+      "request": {
+        "method": "get",
+        "path": "/tribbles/1",
+        "headers": {
+          "Accept": "application/json"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "body": {
+          "Id": 1,
+          "Colour": "blue",
+          "Furryness": "High",
+          "Hungry": true
+        }
+      }
+    }
+]
+```
+
+### The Server
+
+In the server side we setup a test to verify that the Api also honours this pact:
+
+```csharp
+    public void EnsureTribbleApiHonoursPactWithConsumer()
+    {
+        IPactVerifier pactVerifier = new PactVerifier(() => { }, () => { });
+        pactVerifier.ProviderState("There is a tribble with id '1'");
+        var path = Path.Combine(TestContext.CurrentContext.TestDirectory, "consumer-tribble_api.json");
+        using (var testServer = TestServer.Create<Startup>())
+        {
+            pactVerifier
+                .ServiceProvider("Tribble API", testServer.HttpClient)
+                .HonoursPactWith("Consumer")
+                .PactUri(path)
+                .Verify(null, "There is a tribble with id '1'");
+        }
+    }
+```
+
+And an a sample implementation in the server:
+
+```csharp
+    public Tribble Get(int id)
+    {
+        Tribble tribble;
+
+        using (var db = new TribbleContext())
+        {
+            tribble = db.Tribbles.FirstOrDefault(s => s.Id == id);
+        }
+        return tribble;
+    }
+```
